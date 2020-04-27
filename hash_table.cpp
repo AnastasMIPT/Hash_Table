@@ -71,6 +71,7 @@ int main () {
     hash_table3.SizesOfListsInTable (f_out);
     hash_table4.SizesOfListsInTable (f_out);
 
+    printf ("Hello!\n");
     fclose (f_in);
     return 0;
 }
