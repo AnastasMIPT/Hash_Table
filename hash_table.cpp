@@ -3,6 +3,7 @@
 #include <string>
 #include <functional>
 #include <cstring>
+#include <vector>
 #include <memory>
 
 const unsigned long long Max_val = 18446744073709551615U;
