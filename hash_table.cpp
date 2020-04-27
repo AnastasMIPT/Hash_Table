@@ -16,11 +16,10 @@ class HashTable {
     size_t size;
     hash_func_t hash;
 public:
-    list<const char*>* table;
+    std::unique_ptr<list<const char*>[]> table;
 
-    explicit HashTable (size_t size, const hash_func_t &hash_func = HashTable::default_hash);
-
-    ~HashTable ();
+    explicit HashTable (size_t size, const hash_func_t &hash_func = HashTable::default_hash) :
+    size (size), table (new list<const char*>[size]), hash (hash_func) {}
 
     void SizesOfListsInTable (FILE* f_out);
 
@@ -103,16 +102,6 @@ void HashTable::LoadTambleFromVec (std::vector<char*> &vec) {
     for (auto c : vec) {
         insert (c);
     }
-}
-
-HashTable::~HashTable () {
-    delete[] (table);
-}
-
-HashTable::HashTable (size_t size, const hash_func_t &hash_func) {
-    table = new list<const char*>[size];
-    hash = hash_func;
-    this->size = size;
 }
 
 void HashTable::insert (const char* str) {
