@@ -58,21 +58,21 @@ int main () {
     fread (buf.get(), sizeof (char), FileSize, f_in);
     GetWords (words, buf.get ());
 
-     HashTable <char*> hash_table1 (1009);
-    // HashTable hash_table2 (1009, hash_len_of_word);
-    // HashTable hash_table3 (1009, hash_sum_ascii_mod_len);
-    // HashTable hash_table4 (1009, hash_cycle);
-    //HashTable hash_table5 (1009, hash_const_one);
+    HashTable <char*> hash_table1 (1009);
+    HashTable <char*> hash_table2 (1009, hash_len_of_word);
+    HashTable <char*> hash_table3 (1009, hash_sum_ascii_mod_len);
+    HashTable <char*> hash_table4 (1009, hash_cycle);
+    HashTable <char*> hash_table5 (1009, hash_const_one);
 
     hash_table1.LoadTambleFromVec (words);
-    // hash_table2.LoadTambleFromVec (words);
-    // hash_table3.LoadTambleFromVec (words);
-    // hash_table4.LoadTambleFromVec (words);
+    hash_table2.LoadTambleFromVec (words);
+    hash_table3.LoadTambleFromVec (words);
+    hash_table4.LoadTambleFromVec (words);
 
     hash_table1.SizesOfListsInTable (f_out);
-    // hash_table2.SizesOfListsInTable (f_out);
-    // hash_table3.SizesOfListsInTable (f_out);
-    // hash_table4.SizesOfListsInTable (f_out);
+    hash_table2.SizesOfListsInTable (f_out);
+    hash_table3.SizesOfListsInTable (f_out);
+    hash_table4.SizesOfListsInTable (f_out);
 
     printf ("Hello!\n");
     fclose (f_in);
