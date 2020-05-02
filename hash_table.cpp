@@ -11,57 +11,24 @@ const unsigned long long Max_val = 18446744073709551615U;
 typedef unsigned int hash_t;
 typedef std::function<hash_t (const unsigned char*, unsigned long)> hash_func_t;
 
-template<typename ValueType>
-class MapIterator : public std::iterator<std::forward_iterator_tag, ValueType, int> {
-
-    int num;
-    ValueType* data;
-    int* prev;
-    int* next;
-
-public:
-    MapIterator (int point, ValueType* data, int* next, int* prev) :
-            num (point), data (data), prev (prev), next (next) {}
-
-    MapIterator (const MapIterator& it) :
-            num (it.num), data (it.data), prev (it.prev), next (it.next) {}
-
-    bool operator== (MapIterator const& it) const { return num == it.num; }
-
-    bool operator!= (MapIterator const& it) const { return num != it.num; }
-
-    typename MapIterator::reference operator* () const { return data[num]; }
-
-    MapIterator& operator++ () {
-        num = next[num];
-        return *this;
-    }
-
-    MapIterator operator++ (int) {
-        MapIterator temp = *this;
-        num = next[num];
-        return temp;
-    }
-
-};
 
 
-
+template <typename Tp>
 class HashTable {
     static hash_t default_hash (const unsigned char* string, unsigned long len);
     size_t size;
     hash_func_t hash;
 public:
-    std::unique_ptr<list<const char*>[]> table;
+    std::unique_ptr<list<std::pair<const char*, Tp >>[]> table;
 
     explicit HashTable (size_t size, const hash_func_t &hash_func = HashTable::default_hash) :
-    size (size), table (new list<const char*>[size]), hash (hash_func) {}
+    size (size), table (new list<std::pair<const char*, Tp >> [size]), hash (hash_func) {}
 
     void SizesOfListsInTable (FILE* f_out);
 
     void LoadTambleFromVec (std::vector<char*> &vec);
 
-    void insert (const char* str);
+    void insert (const char* str, Tp value);
 };
 
 void cleaning_text (FILE* f_in, unsigned long long FileSize);
@@ -91,7 +58,7 @@ int main () {
     fread (buf.get(), sizeof (char), FileSize, f_in);
     GetWords (words, buf.get ());
 
-     HashTable hash_table1 (1009);
+     HashTable <char*> hash_table1 (1009);
     // HashTable hash_table2 (1009, hash_len_of_word);
     // HashTable hash_table3 (1009, hash_sum_ascii_mod_len);
     // HashTable hash_table4 (1009, hash_cycle);
@@ -126,7 +93,8 @@ void GetWords (std::vector<char*>& words, char* buf) {
     }
 }
 
-void HashTable::SizesOfListsInTable (FILE* f_out) {
+template <typename Tp>
+void HashTable<Tp>::SizesOfListsInTable (FILE* f_out) {
 
     for (int i = 0; i < size; ++i) {
         fprintf (f_out, "%ld,", table[i].list_size ());
@@ -134,21 +102,22 @@ void HashTable::SizesOfListsInTable (FILE* f_out) {
     fprintf (f_out, "\n");
 }
 
-
-void HashTable::LoadTambleFromVec (std::vector<char*> &vec) {
+template <typename Tp>
+void HashTable<Tp>::LoadTambleFromVec (std::vector<char*> &vec) {
     for (auto c : vec) {
-        insert (c);
+        insert (c, c);
     }
 }
 
-void HashTable::insert (const char* str) {
+template <typename Tp>
+void HashTable<Tp>::insert (const char* str, Tp value) {
     unsigned long long index = (hash ((unsigned char*) str, strlen (str)) % size);
     for (auto c : table[index]) {
-        if (strcmp (str, c) == 0) {
+        if (strcmp (str, c.first) == 0) {
             return;
         }
     }
-    table[index].PushBack (str);
+    table[index].PushBack ({str, value});
 }
 
 // hash_t HashTable::default_hash (const char* string) {
@@ -270,7 +239,8 @@ unsigned int MurmurHash2A ( const T * key, unsigned int seed = 17892, int len = 
 	return h;
 }
 
-hash_t HashTable::default_hash (const unsigned char* buf, unsigned long len)
+template <typename Tp>
+hash_t HashTable<Tp>::default_hash (const unsigned char* buf, unsigned long len)
 {
 	unsigned long crc_table[256];
 	unsigned long crc;
