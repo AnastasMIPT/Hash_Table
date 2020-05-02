@@ -33,13 +33,13 @@ public:
 
 void cleaning_text (FILE* f_in, unsigned long long FileSize);
 
-hash_t hash_len_of_word (const char* str);
+hash_t hash_len_of_word (const unsigned char* str, unsigned long len);
 
-hash_t hash_cycle (const char* str);
+hash_t hash_cycle (const unsigned char* str, unsigned long len);
 
-hash_t hash_const_one (const char* str);
+hash_t hash_const_one (const unsigned char* str, unsigned long len);
 
-hash_t hash_sum_ascii_mod_len (const char* str);
+hash_t hash_sum_ascii_mod_len (const unsigned char* str, unsigned long len);
 
 unsigned long long shr (unsigned long long val, unsigned int step);
 
@@ -124,17 +124,17 @@ void HashTable<Tp>::insert (const char* str, Tp value) {
 //     return 1;
 // }
 
-hash_t hash_const_one (const char* str) {
+hash_t hash_const_one (const unsigned char* str, unsigned long len) {
     return 1;
 }
 
-hash_t hash_len_of_word (const char* str) {
-    return strlen (str);
+hash_t hash_len_of_word (const unsigned char* str, unsigned long len) {
+    return len;
 }
 
-hash_t hash_sum_ascii_mod_len (const char* str) {
+hash_t hash_sum_ascii_mod_len (const unsigned char* str, unsigned long len) {
     hash_t hash = 0;
-    const char* s_ptr = str;
+    const unsigned char* s_ptr = str;
     unsigned int col = 1;
     while (*s_ptr != '\0') {
         hash += *s_ptr;
@@ -144,9 +144,9 @@ hash_t hash_sum_ascii_mod_len (const char* str) {
     return hash / col;
 }
 
-hash_t hash_cycle (const char* str) {
+hash_t hash_cycle (const unsigned char* str, unsigned long len) {
     hash_t hash = 0U;
-    const char* s_ptr = str;
+    const unsigned char* s_ptr = str;
 
     while (*s_ptr != '\0') {
         hash = hash ^ *s_ptr;
@@ -197,48 +197,6 @@ void cleaning_text (FILE* f_in, unsigned long long FileSize) {
     fclose (f_out);
 }
 
-#define mmix(h,k) { k *= m; k ^= k >> r; k *= m; h *= m; h ^= k; }
-template <typename T>
-unsigned int MurmurHash2A ( const T * key, unsigned int seed = 17892, int len = sizeof (T))
-{
-	const unsigned int m = 0x5bd1e995;
-	const int r = 24;
-	unsigned int l = len;
-
-	const unsigned char * data = (const unsigned char *)key;
-
-	unsigned int h = seed;
-	unsigned int k;
-
-	while(len >= 4)
-	{
-		k = *(unsigned int*)data;
-
-		mmix(h,k);
-
-		data += 4;
-		len -= 4;
-	}
-
-	unsigned int t = 0;
-
-	switch(len)
-	{
-	case 3: t ^= data[2] << 16;
-	case 2: t ^= data[1] << 8;
-	case 1: t ^= data[0];
-	};
-
-	mmix(h,t);
-	mmix(h,l);
-
-	h ^= h >> 13;
-	h *= m;
-	h ^= h >> 15;
-
-	return h;
-}
-
 template <typename Tp>
 hash_t HashTable<Tp>::default_hash (const unsigned char* buf, unsigned long len)
 {
@@ -247,12 +205,14 @@ hash_t HashTable<Tp>::default_hash (const unsigned char* buf, unsigned long len)
 	for (int i = 0; i < 256; i++)
 	{
 		crc = i;
-		for (int j = 0; j < 8; j++)
-			crc = crc & 1 ? (crc >> 1) ^ 0xEDB88320UL : crc >> 1;
+		for (int j = 0; j < 8; j++) {
+            crc = crc & 1 ? (crc >> 1) ^ 0xEDB88320UL : crc >> 1;
+        }
 		crc_table[i] = crc;
-	};
+	}
 	crc = 0xFFFFFFFFUL;
-	while (len--)
-	crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
+	while (len--) {
+        crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
+    }
 	return crc ^ 0xFFFFFFFFUL;
 }
