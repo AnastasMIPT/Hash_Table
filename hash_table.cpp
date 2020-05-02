@@ -11,8 +11,6 @@ const unsigned long long Max_val = 18446744073709551615U;
 typedef unsigned int hash_t;
 typedef std::function<hash_t (const unsigned char*, unsigned long)> hash_func_t;
 
-
-
 template <typename Tp>
 class HashTable {
     static hash_t default_hash (const unsigned char* string, unsigned long len);
@@ -29,6 +27,8 @@ public:
     void LoadTambleFromVec (std::vector<char*> &vec);
 
     void insert (const char* str, Tp value);
+
+    std::pair<const char*, Tp>* find (const char* key);
 };
 
 void cleaning_text (FILE* f_in, unsigned long long FileSize);
@@ -74,6 +74,8 @@ int main () {
     hash_table3.SizesOfListsInTable (f_out);
     hash_table4.SizesOfListsInTable (f_out);
 
+    printf ("%s\n", hash_table1.find ("for")->second);
+
     printf ("Hello!\n");
     fclose (f_in);
     return 0;
@@ -90,6 +92,16 @@ void GetWords (std::vector<char*>& words, char* buf) {
             temp_str = buf_p + 1;
         }
         ++buf_p;
+    }
+}
+
+template <typename Tp>
+std::pair<const char*, Tp>* HashTable<Tp>::find (const char* key) {
+    unsigned int pos = hash ((const unsigned char*) key, strlen (key));
+    for (auto it = table[pos].begin (); it !=  table[pos].end (); ++it) {
+        if (strcmp (key, (*it).first) == 0) {
+            return it;
+        }
     }
 }
 
