@@ -3,7 +3,7 @@
 #include <ctime>
 #include <nmmintrin.h>
 
-const int NumTimes = 100;
+const int NumTimes = 20;
 
 hash_t CRC_32_fast (const unsigned char* string, unsigned long len);
 
@@ -25,6 +25,9 @@ int main () {
 
     HashTable <char*> hash_table_2 (1009, hash_cycle);
     hash_table_2.LoadTambleFromVec (words);
+
+    HashTable <char*> hash_table_2_a (1009, hash_cycle_asm);
+    hash_table_2_a.LoadTambleFromVec (words);
     
 
     fclose (f_in);
@@ -40,22 +43,29 @@ int main () {
     }
     std::cout << "cycle_hash: " << double (clock () - time1) / CLOCKS_PER_SEC << std::endl;
     
-    
-    clock_t time = clock();
+    clock_t time3 = clock();
     for (int i = 0; i < NumTimes; ++i) {
         for (auto el : words) {
-            hash_table1.find (el);
+            hash_table_2_a.find (el);
         }
     }
-    std::cout << "CRC32 without SSE: " << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
+    std::cout << "cycle_hash_asm: " << double (clock () - time3) / CLOCKS_PER_SEC << std::endl;
     
-    clock_t time2 = clock();
-    for (int i = 0; i < NumTimes; ++i) {
-        for (auto el : words) {
-            hash_table_sse.find (el);
-        }
-    }
-    std::cout << "CRC32 with SSE: " << double (clock () - time2) / CLOCKS_PER_SEC << std::endl;
+    // clock_t time = clock();
+    // for (int i = 0; i < NumTimes; ++i) {
+    //     for (auto el : words) {
+    //         hash_table1.find (el);
+    //     }
+    // }
+    // std::cout << "CRC32 without SSE: " << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
+    
+    // clock_t time2 = clock();
+    // for (int i = 0; i < NumTimes; ++i) {
+    //     for (auto el : words) {
+    //         hash_table_sse.find (el);
+    //     }
+    // }
+    // std::cout << "CRC32 with SSE: " << double (clock () - time2) / CLOCKS_PER_SEC << std::endl;
 
     return 0;
 }
@@ -82,3 +92,4 @@ hash_t CRC_32_fast (const unsigned char* string, unsigned long len) {
 
     return hash;
 }
+

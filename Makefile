@@ -4,7 +4,7 @@ all: clean runfile
 runfile: ofile
 	@g++ $(Project_name).o -o $(Project_name)
 ofile: $(Project_name).cpp cache_list.h
-	@g++ --std=c++17 -msse4 -c $(Project_name).cpp
+	@g++ --std=c++17 -msse4 -O0 -c $(Project_name).cpp
 clean:
 	@rm -f $(Project_name) $(Project_name).o
 install:
