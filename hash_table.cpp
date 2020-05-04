@@ -19,8 +19,8 @@ class HashTable {
 public:
     std::unique_ptr<list<std::pair<const char*, Tp >>[]> table;
 
-    explicit HashTable (size_t size, const hash_func_t &hash_func = HashTable::default_hash) :
-    size (size), table (new list<std::pair<const char*, Tp >> [size]), hash (hash_func) {}
+    explicit HashTable (size_t size, const hash_func_t& hash_func = HashTable::default_hash) :
+            size (size), table (new list<std::pair<const char*, Tp >> [size]), hash (hash_func) {}
 
     void SizesOfListsInTable (FILE* f_out);
 
@@ -74,7 +74,11 @@ int main () {
     hash_table3.SizesOfListsInTable (f_out);
     hash_table4.SizesOfListsInTable (f_out);
 
-    printf ("%s\n", hash_table1.find ("for")->second);
+    if (hash_table1.find ("for")) {
+        printf ("%s\n", hash_table1.find ("for")->second);
+    } else {
+        printf ("NOOO\n");
+    }
 
     printf ("Hello!\n");
     fclose (f_in);
@@ -97,12 +101,13 @@ void GetWords (std::vector<char*>& words, char* buf) {
 
 template <typename Tp>
 std::pair<const char*, Tp>* HashTable<Tp>::find (const char* key) {
-    unsigned int pos = hash ((const unsigned char*) key, strlen (key));
+    unsigned int pos = hash ((const unsigned char*) key, strlen (key)) % size;
     for (auto it = table[pos].begin (); it !=  table[pos].end (); ++it) {
         if (strcmp (key, (*it).first) == 0) {
-            return it;
+            return &*it;
         }
     }
+    return nullptr;
 }
 
 template <typename Tp>
@@ -210,21 +215,21 @@ void cleaning_text (FILE* f_in, unsigned long long FileSize) {
 }
 
 template <typename Tp>
-hash_t HashTable<Tp>::default_hash (const unsigned char* buf, unsigned long len)
+hash_t HashTable<Tp>::default_hash (const unsigned char* string, unsigned long len)
 {
-	unsigned long crc_table[256];
-	unsigned long crc;
-	for (int i = 0; i < 256; i++)
-	{
-		crc = i;
-		for (int j = 0; j < 8; j++) {
+    unsigned long crc_table[256];
+    unsigned long crc;
+    for (int i = 0; i < 256; i++)
+    {
+        crc = i;
+        for (int j = 0; j < 8; j++) {
             crc = crc & 1 ? (crc >> 1) ^ 0xEDB88320UL : crc >> 1;
         }
-		crc_table[i] = crc;
-	}
-	crc = 0xFFFFFFFFUL;
-	while (len--) {
-        crc = crc_table[(crc ^ *buf++) & 0xFF] ^ (crc >> 8);
+        crc_table[i] = crc;
     }
-	return crc ^ 0xFFFFFFFFUL;
+    crc = 0xFFFFFFFFUL;
+    while (len--) {
+        crc = crc_table[(crc ^ *string++) & 0xFF] ^ (crc >> 8);
+    }
+    return crc ^ 0xFFFFFFFFUL;
 }
