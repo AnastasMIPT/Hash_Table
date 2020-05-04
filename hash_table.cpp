@@ -19,41 +19,43 @@ int main () {
 
     HashTable <char*> hash_table1 (1009);
     hash_table1.LoadTambleFromVec (words);
-    HashTable <char*> hash_table_sse (1009, CRC_32_fast);
-    hash_table1.LoadTambleFromVec (words);
     
+    HashTable <char*> hash_table_sse (1009, CRC_32_fast);
+    hash_table_sse.LoadTambleFromVec (words);
+
+    HashTable <char*> hash_table_2 (1009, hash_cycle);
+    hash_table_2.LoadTambleFromVec (words);
+    
+
     fclose (f_in);
 
 
     printf ("%zu\n", words.size());
     
-    clock_t time = clock();
-    //int col = 0;
+    clock_t time1 = clock();
     for (int i = 0; i < NumTimes; ++i) {
         for (auto el : words) {
-            //printf ("%s ", el);
-            //col++;
-            //printf ("%d\n", col);
+            hash_table_2.find (el);
+        }
+    }
+    std::cout << "cycle_hash: " << double (clock () - time1) / CLOCKS_PER_SEC << std::endl;
+    
+    
+    clock_t time = clock();
+    for (int i = 0; i < NumTimes; ++i) {
+        for (auto el : words) {
             hash_table1.find (el);
         }
     }
-    
-
-    std::cout << "Without SSE: " << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
+    std::cout << "CRC32 without SSE: " << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
     
     clock_t time2 = clock();
-    //int col = 0;
     for (int i = 0; i < NumTimes; ++i) {
         for (auto el : words) {
-            //printf ("%s ", el);
-            //col++;
-            //printf ("%d\n", col);
             hash_table_sse.find (el);
         }
     }
-    
-
-    std::cout << "With SSE: " << double (clock () - time2) / CLOCKS_PER_SEC << std::endl;
+    std::cout << "CRC32 with SSE: " << double (clock () - time2) / CLOCKS_PER_SEC << std::endl;
 
     return 0;
 }
