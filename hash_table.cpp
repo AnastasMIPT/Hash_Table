@@ -1,6 +1,8 @@
 #include <iostream>
 #include "hash_table.h"
+#include <ctime>
 
+const int NumTimes = 1000;
 int main () {
     FILE* f_in = fopen ("input.txt", "r");
     FILE* f_out = fopen ("output.csv", "w");
@@ -16,10 +18,20 @@ int main () {
     hash_table1.SizesOfListsInTable (f_out);
     
     printf ("%zu\n", words.size());
-    for (auto el : words) {
-        hash_table1.find (el);
+    
+    clock_t time = clock();
+    //int col = 0;
+    for (int i = 0; i < NumTimes; ++i) {
+        for (auto el : words) {
+            //printf ("%s ", el);
+            //col++;
+            //printf ("%d\n", col);
+            hash_table1.find (el);
+        }
     }
+    
 
+    std::cout << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
     fclose (f_in);
     return 0;
 }
