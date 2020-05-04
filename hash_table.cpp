@@ -3,7 +3,7 @@
 #include <ctime>
 #include <nmmintrin.h>
 
-const int NumTimes = 20;
+const int NumTimes = 200;
 
 hash_t CRC_32_fast (const unsigned char* string, unsigned long len);
 
