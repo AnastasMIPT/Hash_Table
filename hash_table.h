@@ -28,7 +28,7 @@ public:
 
     void insert (const char* str, Tp value);
 
-    std::pair<const char*, Tp>* find (const char* key);
+    std::pair<const char*, Tp>* find (const char* key) const;
 };
 
 void cleaning_text (FILE* f_in, unsigned long long FileSize);
@@ -62,7 +62,7 @@ void GetWords (std::vector<char*>& words, char* buf) {
 }
 
 template <typename Tp>
-std::pair<const char*, Tp>* HashTable<Tp>::find (const char* key) {
+std::pair<const char*, Tp>* HashTable<Tp>::find (const char* key) const {
     unsigned int pos = hash ((const unsigned char*) key, strlen (key)) % size;
     for (auto it = table[pos].begin (); it !=  table[pos].end (); ++it) {
         if (strcmp (key, (*it).first) == 0) {

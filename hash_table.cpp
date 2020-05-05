@@ -3,9 +3,13 @@
 #include <ctime>
 #include <nmmintrin.h>
 
-const int NumTimes = 200;
+//extern "C" unsigned int cycle_asm (unsigned char* str, unsigned int len);
+
+const int NumTimes = 100;
 
 hash_t CRC_32_fast (const unsigned char* string, unsigned long len);
+void print_time_of_search (const HashTable<char*>& table, const std::vector<char*>& words, const char* massege);
+
 
 int main () {
     FILE* f_in = fopen ("input.txt", "r");
@@ -35,39 +39,22 @@ int main () {
 
     printf ("%zu\n", words.size());
     
-    clock_t time1 = clock();
-    for (int i = 0; i < NumTimes; ++i) {
-        for (auto el : words) {
-            hash_table_2.find (el);
-        }
-    }
-    std::cout << "cycle_hash: " << double (clock () - time1) / CLOCKS_PER_SEC << std::endl;
-    
-    clock_t time3 = clock();
-    for (int i = 0; i < NumTimes; ++i) {
-        for (auto el : words) {
-            hash_table_2_a.find (el);
-        }
-    }
-    std::cout << "cycle_hash_asm: " << double (clock () - time3) / CLOCKS_PER_SEC << std::endl;
-    
-    // clock_t time = clock();
-    // for (int i = 0; i < NumTimes; ++i) {
-    //     for (auto el : words) {
-    //         hash_table1.find (el);
-    //     }
-    // }
-    // std::cout << "CRC32 without SSE: " << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
-    
-    // clock_t time2 = clock();
-    // for (int i = 0; i < NumTimes; ++i) {
-    //     for (auto el : words) {
-    //         hash_table_sse.find (el);
-    //     }
-    // }
-    // std::cout << "CRC32 with SSE: " << double (clock () - time2) / CLOCKS_PER_SEC << std::endl;
-
+    print_time_of_search (hash_table_2, words, "cycle_hash: ");
+    print_time_of_search (hash_table_2_a, words, "cycle_hash_asm: ");
+    print_time_of_search (hash_table1, words, "CRC32 without SSE: ");
+    print_time_of_search (hash_table_sse, words, "CRC32 with SSE: ");
+  
     return 0;
+}
+void print_time_of_search (const HashTable<char*>& table, const std::vector<char*>& words, const char* massege) {
+    clock_t time = clock();
+    for (int i = 0; i < NumTimes; ++i) {
+        for (auto el : words) {
+            table.find (el);
+        }
+    }
+    std::cout << massege << double (clock () - time) / CLOCKS_PER_SEC << std::endl;
+    
 }
 
 hash_t CRC_32_fast (const unsigned char* string, unsigned long len) {
