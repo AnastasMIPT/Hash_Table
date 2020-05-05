@@ -3,15 +3,17 @@
 #include <ctime>
 #include <nmmintrin.h>
 
-//extern "C" unsigned int cycle_asm (unsigned char* str, unsigned int len);
+extern "C" int my_strcmp (const char* str1, const char* str2);
 
-const int NumTimes = 100;
+#define strcmp my_strcmp
+const int NumTimes = 200;
 
 hash_t CRC_32_fast (const unsigned char* string, unsigned long len);
 void print_time_of_search (const HashTable<char*>& table, const std::vector<char*>& words, const char* massege);
 
 
 int main () {
+    
     FILE* f_in = fopen ("input.txt", "r");
     FILE* f_out = fopen ("output.csv", "w");
 
@@ -41,8 +43,8 @@ int main () {
     
     print_time_of_search (hash_table_2, words, "cycle_hash: ");
     print_time_of_search (hash_table_2_a, words, "cycle_hash_asm: ");
-    print_time_of_search (hash_table1, words, "CRC32 without SSE: ");
-    print_time_of_search (hash_table_sse, words, "CRC32 with SSE: ");
+    //print_time_of_search (hash_table1, words, "CRC32 without SSE: ");
+    //print_time_of_search (hash_table_sse, words, "CRC32 with SSE: ");
   
     return 0;
 }
