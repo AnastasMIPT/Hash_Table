@@ -41,10 +41,10 @@ int main () {
 
     printf ("%zu\n", words.size());
     
-    print_time_of_search (hash_table_2, words, "cycle_hash: ");
-    print_time_of_search (hash_table_2_a, words, "cycle_hash_asm: ");
-    //print_time_of_search (hash_table1, words, "CRC32 without SSE: ");
-    //print_time_of_search (hash_table_sse, words, "CRC32 with SSE: ");
+//    print_time_of_search (hash_table_2, words, "cycle_hash: ");
+//    print_time_of_search (hash_table_2_a, words, "cycle_hash_asm: ");
+    print_time_of_search (hash_table1, words, "CRC32 without SSE: ");
+    print_time_of_search (hash_table_sse, words, "CRC32 with SSE: ");
   
     return 0;
 }
